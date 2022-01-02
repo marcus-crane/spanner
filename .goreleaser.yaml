@@ -1,0 +1,85 @@
+project_name: spanner
+builds:
+  - binary: spanner
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - arm64
+      - amd64
+archives:
+  - format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+nfpms:
+  - package_name: spanner
+    vendor: utf9k
+    homepage: https://github.com/marcus-crane/spanner
+    maintainer: Marcus Crane <spanner@utf9k.net>
+    description: "A minimal tool for visualising Datadog traces"
+    license: "MIT"
+    formats:
+      - apk
+      - deb
+      - rpm
+dockers:
+  - image_templates:
+      - "docker.io/utf9k/spanner:{{ .Version }}-amd64"
+      - "ghcr.io/marcus-crane/spanner:{{ .Version }}-amd64"
+    skip_push: auto
+    use: buildx
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source=https://github.com/marcus-crane/spanner"
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "docker.io/utf9k/spanner:{{ .Version }}-arm64v8"
+      - "ghcr.io/marcus-crane/spanner:{{ .Version }}-arm64v8"
+    skip_push: auto
+    use: buildx
+    goarch: arm64
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source=https://github.com/marcus-crane/spanner"
+      - "--platform=linux/arm64/v8"
+docker_manifests:
+  - name_template: docker.io/utf9k/spanner:{{ .Version }}
+    image_templates:
+      - docker.io/utf9k/spanner:{{ .Version }}-amd64
+      - docker.io/utf9k/spanner:{{ .Version }}-arm64v8
+    skip_push: auto
+  - name_template: ghcr.io/marcus-crane/spanner:{{ .Version }}
+    image_templates:
+      - ghcr.io/marcus-crane/spanner:{{ .Version }}-amd64
+      - ghcr.io/marcus-crane/spanner:{{ .Version }}-arm64v8
+    skip_push: auto
+release:
+  github:
+    owner: marcus-crane
+    name: spanner
+  prerelease: auto
+brews:
+  - tap:
+      owner: marcus-crane
+      name: homebrew-tap
+      branch: main
+    commit_author:
+      name: utf9k Release Bot
+      email: helper@utf9k.net
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    homepage: "https://github.com/marcus-crane/spanner"
+    description: "A minimal tool for visualising Datadog traces"
+    license: "MIT"
+    skip_upload: auto
