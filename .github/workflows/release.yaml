@@ -1,8 +1,9 @@
-name: "Release spanner binaries
+name: "Release spanner binaries"
 on:
   push:
     tags:
       - v*
+  workflow_dispatch:
 
 permissions:
   contents: write
