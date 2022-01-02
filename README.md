@@ -13,8 +13,7 @@ go install github.com/marcus-crane/spanner@latest
 If you prefer Homebrew, you can use that as well:
 
 ```shell
-brew tap marcus-crane/tap
-brew install spanner
+brew install marcus-crane/tap/spanner
 ```
 
 ## Usage
