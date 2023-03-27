@@ -1,10 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/vmihailenco/msgpack/v5"
@@ -41,6 +43,10 @@ type Trace []Span
 type Traces []Trace
 
 func main() {
+	verbose := flag.Bool("verbose", false, "verbose mode outputs all information available for each span")
+	nameFilter := flag.String("name", "", "filter spans by name (must include the given string value). Not usable with verbose mode.")
+	flag.Parse()
+
 	traceHandler := func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -55,7 +61,17 @@ func main() {
 		if err != nil {
 			log.Println("Failed to unpack traces")
 		}
-		log.Println(spew.Sdump(traces))
+		if *verbose {
+			log.Println(spew.Sdump(traces))
+		} else {
+			for _, trace := range traces {
+				for _, span := range trace {
+					if *nameFilter == "" || strings.Contains(span.Name, *nameFilter) {
+						log.Printf("%s\n\033[34m%s\033[0m\n", span.Name, span.Resource)
+					}
+				}
+			}
+		}
 		fmt.Fprintf(w, "OK")
 	}
 
